@@ -1,0 +1,211 @@
+@font-face { font-family: 'ws-icons-amenities'; src: url("ws-icons-amenities.eot?59yazv"); src: url("ws-icons-amenities.eot?59yazv#iefix") format("embedded-opentype"), url("ws-icons-amenities.woff2?59yazv") format("woff2"), url("ws-icons-amenities.ttf?59yazv") format("truetype"), url("ws-icons-amenities.woff?59yazv") format("woff"), url("ws-icons-amenities.svg?59yazv#ws-icons-amenities") format("svg"); font-weight: normal; font-style: normal; font-display: block; }
+[class^="ws-amenity-icon-"], [class*=" ws-amenity-icon-"] { /* use !important to prevent issues with browser extensions that change fonts */ font-family: 'ws-icons-amenities' !important; speak: never; font-style: normal; font-weight: normal; font-variant: normal; text-transform: none; line-height: 1; /* Better Font Rendering =========== */ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+.ws-amenity-icon-newspaper:before { content: "\e917"; }
+
+.ws-amenity-icon-copy-service:before { content: "\f0c5"; }
+
+.ws-amenity-icon-coffee:before { content: "\f0f4"; }
+
+.ws-amenity-icon-shower:before { content: "\f2cc"; }
+
+.ws-amenity-icon-sitting-area:before { content: "\f4b8"; }
+
+.ws-amenity-icon-24-hour-front-desk:before { content: "\f4fd"; }
+
+.ws-amenity-icon-door-self-closing:before { content: "\f52b"; }
+
+.ws-amenity-icon-free-parking:before { content: "\f540"; }
+
+.ws-amenity-icon-parking:before { content: "\f540"; }
+
+.ws-amenity-icon-parking-outdoor:before { content: "\f540"; }
+
+.ws-amenity-icon-non-smoking-room:before { content: "\f54d"; }
+
+.ws-amenity-icon-toilet:before { content: "\f7d8"; }
+
+.ws-amenity-icon-smoke-detectors:before { content: "\e93d"; }
+
+.ws-amenity-icon-door-viewport:before { content: "\e940"; }
+
+.ws-amenity-icon-ice-machine:before { content: "\e93c"; }
+
+.ws-amenity-icon-checkin-early:before { content: "\e937"; }
+
+.ws-amenity-icon-checkout-late:before { content: "\e938"; }
+
+.ws-amenity-icon-sprinklers:before { content: "\e936"; }
+
+.ws-amenity-icon-us-govt-fire-safety-approved:before { content: "\e936"; }
+
+.ws-amenity-icon-bathroom-amenities-luxurious:before { content: "\e93e"; }
+
+.ws-amenity-icon-bed-double:before { content: "\e93f"; }
+
+.ws-amenity-icon-bed-king:before { content: "\e93f"; }
+
+.ws-amenity-icon-bed-queen:before { content: "\e93f"; }
+
+.ws-amenity-icon-movies-in-room:before { content: "\e939"; }
+
+.ws-amenity-icon-door-deadbolt:before { content: "\e93a"; }
+
+.ws-amenity-icon-safe-deposit-box:before { content: "\e93b"; }
+
+.ws-amenity-icon-fire-alarm-light:before { content: "\e935"; }
+
+.ws-amenity-icon-meeting-facilities:before { content: "\e92e"; }
+
+.ws-amenity-icon-atm:before { content: "\e92f"; }
+
+.ws-amenity-icon-concierge-desk:before { content: "\e930"; }
+
+.ws-amenity-icon-bathroom-private:before { content: "\e931"; }
+
+.ws-amenity-icon-bathroom-amenities:before { content: "\e931"; }
+
+.ws-amenity-icon-satellite-tv:before { content: "\e932"; }
+
+.ws-amenity-icon-laundry-service:before { content: "\e933"; }
+
+.ws-amenity-icon-kitchen:before { content: "\e934"; }
+
+.ws-amenity-icon-breakfast-continental-complimentary:before { content: "\e92a"; }
+
+.ws-amenity-icon-breakfast-continental:before { content: "\e92a"; }
+
+.ws-amenity-icon-desk-outlet:before { content: "\e92b"; }
+
+.ws-amenity-icon-closets:before { content: "\e92c"; }
+
+.ws-amenity-icon-balcony:before { content: "\e92d"; }
+
+.ws-amenity-icon-tv-remote-control:before { content: "\e929"; }
+
+.ws-amenity-icon-video-surveillance:before { content: "\e928"; }
+
+.ws-amenity-icon-24-hour-security:before { content: "\e928"; }
+
+.ws-amenity-icon-vending-machine:before { content: "\e924"; }
+
+.ws-amenity-icon-fitness-facility:before { content: "\e925"; }
+
+.ws-amenity-icon-gym:before { content: "\e925"; }
+
+.ws-amenity-icon-crib-available:before { content: "\e926"; }
+
+.ws-amenity-icon-bathrobes:before { content: "\e927"; }
+
+.ws-amenity-icon-data-port-available:before { content: "\e921"; }
+
+.ws-amenity-icon-pets-not-allowed:before { content: "\e922"; }
+
+.ws-amenity-icon-pets-small-allowed:before { content: "\e923"; }
+
+.ws-amenity-icon-mini-bar:before { content: "\e91e"; }
+
+.ws-amenity-icon-writing-desk-chair:before { content: "\e91f"; }
+
+.ws-amenity-icon-desk:before { content: "\e920"; }
+
+.ws-amenity-icon-bed-sofa:before { content: "\e91d"; }
+
+.ws-amenity-icon-hairdryer-in-room:before { content: "\e910"; }
+
+.ws-amenity-icon-free-local-calls:before { content: "\e90a"; }
+
+.ws-amenity-icon-telephone:before { content: "\e90a"; }
+
+.ws-amenity-icon-telephone-direct-dial:before { content: "\e90a"; }
+
+.ws-amenity-icon-wakeup-service:before { content: "\e916"; }
+
+.ws-amenity-icon-phone-speaker:before { content: "\e916"; }
+
+.ws-amenity-icon-iron:before { content: "\e900"; }
+
+.ws-amenity-icon-ironing-board:before { content: "\e904"; }
+
+.ws-amenity-icon-dry-cleaning:before { content: "\e91a"; }
+
+.ws-amenity-icon-voicemail:before { content: "\e918"; }
+
+.ws-amenity-icon-bar:before { content: "\e912"; }
+
+.ws-amenity-icon-lounge:before { content: "\e912"; }
+
+.ws-amenity-icon-housekeeping:before { content: "\e90f"; }
+
+.ws-amenity-icon-electronic-door-locks:before { content: "\e914"; }
+
+.ws-amenity-icon-refrigerator:before { content: "\e913"; }
+
+.ws-amenity-icon-guest-laundromat:before { content: "\e901"; }
+
+.ws-amenity-icon-outdoor-pool:before { content: "\e902"; }
+
+.ws-amenity-icon-indoor-pool:before { content: "\e902"; }
+
+.ws-amenity-icon-elevators:before { content: "\e903"; }
+
+.ws-amenity-icon-restaurant:before { content: "\e905"; }
+
+.ws-amenity-icon-safe:before { content: "\e91b"; }
+
+.ws-amenity-icon-radio:before { content: "\e91c"; }
+
+.ws-amenity-icon-microwave:before { content: "\e906"; }
+
+.ws-amenity-icon-bathtub:before { content: "\e919"; }
+
+.ws-amenity-icon-business-center:before { content: "\e915"; }
+
+.ws-amenity-icon-air-conditioned:before { content: "\e911"; }
+
+.ws-amenity-icon-temperature-control:before { content: "\e911"; }
+
+.ws-amenity-icon-wheel-chair-access:before { content: "\e907"; }
+
+.ws-amenity-icon-parking-disabled:before { content: "\e907"; }
+
+.ws-amenity-icon-handicap-facilities:before { content: "\e907"; }
+
+.ws-amenity-icon-internet-access-complimentary:before { content: "\e908"; }
+
+.ws-amenity-icon-high-speed-internet-access:before { content: "\e908"; }
+
+.ws-amenity-icon-internet-access-wireless:before { content: "\e908"; }
+
+.ws-amenity-icon-internet-access:before { content: "\e908"; }
+
+.ws-amenity-icon-fax-service:before { content: "\e909"; }
+
+.ws-amenity-icon-coffeemaker:before { content: "\e90b"; }
+
+.ws-amenity-icon-cable-tv:before { content: "\e90c"; }
+
+.ws-amenity-icon-tv:before { content: "\e90c"; }
+
+.ws-amenity-icon-fire-alarms:before { content: "\e90d"; }
+
+.ws-amenity-icon-alarm-clock:before { content: "\e90e"; }
+
+ul.ws-amenity-list-icons { margin-left: 0; margin-bottom: 0; text-align: center; }
+ul.ws-amenity-list-icons li { list-style-type: none; }
+ul.ws-amenity-list-icons li:before { content: none !important; }
+ul.ws-amenity-list-icons li.ws-amenity-item-icon { display: inline-block; width: 33.33%; margin-bottom: 5px; padding: 0 5px; vertical-align: top; }
+ul.ws-amenity-list-icons li.ws-amenity-item-icon .ws-amenity-icon { font-size: 24px; }
+
+.page-ASP-index_aspx ul.ws-amenity-list-icons { text-align: center; }
+.page-ASP-index_aspx ul.ws-amenity-list-icons li.ws-amenity-item-icon { display: inline-block; width: 25%; margin-bottom: 5px; padding: 0 5px; vertical-align: top; }
+.page-ASP-index_aspx ul.ws-amenity-list-icons li.ws-amenity-item-icon .ws-amenity-name { position: relative; display: block; list-style-type: none; }
+
+body:not(.page-ASP-index_aspx) .ws-amenity-list { display: flex; margin-left: 0; flex-wrap: wrap; flex-direction: row; }
+body:not(.page-ASP-index_aspx) .ws-amenity-list li { position: relative; display: list-item; width: calc(33.33% - 1.65em); max-width: calc(33.33% - 1.65em); margin-left: 1.65em; padding-left: 0; vertical-align: top; }
+body:not(.page-ASP-index_aspx) .ws-amenity-list li::before { position: absolute; display: list-item; content: ""; }
+
+@media screen and (max-width: 480px) { .page-ASP-index_aspx ul.ws-amenity-list-icons li.ws-amenity-item-icon { width: 33%; } }
+@media screen and (max-width: 320px) { ul.ws-amenity-list-icons li.ws-amenity-item-icon { width: 50%; }
+  .page-ASP-index_aspx ul.ws-amenity-list-icons li.ws-amenity-item-icon { width: 50%; }
+  body:not(.page-ASP-index_aspx) .ws-amenity-list li { width: calc(50% - 1.65em); max-width: calc(50% - 1.65em); } }
