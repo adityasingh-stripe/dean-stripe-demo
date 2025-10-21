@@ -2,8 +2,6 @@
 
 This integration provides a comprehensive Stripe Payment Element solution for hotel booking with proper customer management for future off-session payments.
 
-📖 **For detailed integration steps and technical implementation guide, see [INTEGRATION-GUIDE.md](./INTEGRATION-GUIDE.md)**
-
 ## Setup Instructions
 
 1. **Install Dependencies**
