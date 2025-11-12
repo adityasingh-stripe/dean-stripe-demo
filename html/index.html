@@ -9268,20 +9268,10 @@ footer .container {
           const expressCheckoutElement = elements.create("expressCheckout", {
             emailRequired: true,
             phoneNumberRequired: true,
+            paymentMethodOrder: ['applePay', 'googlePay'],  // Prioritize Apple Pay first, then Google Pay
             paymentMethods: {
               applePay: "always",
               googlePay: "always",
-              link: "never",
-              amazonPay: "never",
-            },
-            buttonType: {
-              applePay: 'plain',
-              googlePay: 'plain',
-            },
-            layout: {
-              maxColumns: 2,
-              maxRows: 1,
-              overflow: 'never',
             },
           });
           
@@ -9382,19 +9372,24 @@ footer .container {
           }, 1000);
 
           // Create and mount the Payment Element
-          paymentElement = elements.create("payment"); 
-          
-          // Disable country and postal code collection on Payment Element
+          paymentElement = elements.create("payment");
+
+          // ALTERNATIVE: Payment Element with paymentMethodOrder (for comparison testing)
+          // Uncomment below to test Payment Element with custom ordering instead of current config
           // paymentElement = elements.create("payment", {
-          //     fields: {
-          //       billingDetails: {
-          //         address: {
-          //           country: "never",     // Disable country collection
-          //           postalCode: "never"   // Disable postal code collection
-          //         }
+          //   paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'klarna'],
+          //   fields: {
+          //     billingDetails: {
+          //       address: {
+          //         country: "never",     // Disable country collection
+          //         postalCode: "never"   // Disable postal code collection
           //       }
           //     }
+          //   }
           // });
+
+          // Note: Express Checkout Element (above) already handles Apple Pay/Google Pay
+          // This Payment Element provides fallback card and other payment methods
 
           paymentElement.mount("#payment-element");
 
