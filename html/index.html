@@ -9164,8 +9164,8 @@ footer .container {
           const urlParams = new URLSearchParams(window.location.search);
           const flow = urlParams.get('flow') || 'full'; // Default to full payment
           
-          // Get the payment amount from the cart data (€760 as shown in the booking)
-          const amount = 760; // Amount from WsVars.Amount
+          // Get the payment amount from the cart data (dynamically from WsVars.Amount)
+          const amount = parseFloat(WsVars.Amount); // Read from WsVars.Amount
 
           const firstDayOfStay = new Date(WsVars.DayIn);
 
@@ -9271,6 +9271,17 @@ footer .container {
             paymentMethods: {
               applePay: "always",
               googlePay: "always",
+              link: "never",
+              amazonPay: "never",
+            },
+            buttonType: {
+              applePay: 'plain',
+              googlePay: 'plain',
+            },
+            layout: {
+              maxColumns: 2,
+              maxRows: 1,
+              overflow: 'never',
             },
           });
           
@@ -9333,23 +9344,7 @@ footer .container {
                 console.error('Error updating customer with express checkout details:', error);
               }
             }
-            
-            try {
-              const paymentIntentId = clientSecret.split('_secret_')[0];
-              await fetch('/update-payment-intent', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  payment_intent_id: paymentIntentId,
-                  customer_info: billingDetails
-                }),
-              });
-            } catch (error) {
-              console.error('Failed to update payment intent with customer info:', error);
-            }
-            
+
             populateGuestForm(billingDetails);
             
             const guestSection = document.querySelector('#dvWsFirstName').closest('.ws-step');
@@ -9505,17 +9500,41 @@ footer .container {
           // Enable the Reserve buttons now that Stripe is ready
           const mainReserveBtn = document.querySelector("#buReserve2");
           const summaryReserveBtn = document.querySelector("#buReserveSummary");
-          
+
           if (mainReserveBtn) {
             mainReserveBtn.disabled = false;
             mainReserveBtn.classList.remove("ws-disabled");
           }
-          
+
           if (summaryReserveBtn) {
             summaryReserveBtn.disabled = false;
             summaryReserveBtn.classList.remove("ws-disabled");
           }
-          
+
+          // Set up form submission handlers (consolidated from second DOMContentLoaded listener)
+          const form = document.querySelector("#wsform");
+          if (form) {
+            form.addEventListener("submit", async function (e) {
+              e.preventDefault();
+              await handleStripePayment();
+            });
+          }
+
+          // Add click event listeners to both Reserve buttons
+          if (mainReserveBtn) {
+            mainReserveBtn.addEventListener("click", async function (e) {
+              e.preventDefault();
+              await handleStripePayment();
+            });
+          }
+
+          if (summaryReserveBtn) {
+            summaryReserveBtn.addEventListener("click", async function (e) {
+              e.preventDefault();
+              await handleStripePayment();
+            });
+          }
+
         } catch (error) {
           console.error("Error initializing Stripe:", error);
           showPaymentError(
@@ -9607,7 +9626,7 @@ footer .container {
             }
 
             // Redirect to success page
-            window.location.href = `${window.location.origin}/success?setup_intent=${window.paymentFlow.setupIntentId}`;
+            window.location.href = `${window.location.origin}/success?setup_intent=${window.paymentFlow.setupIntentId}&email=${encodeURIComponent(billingDetails.email || '')}`;
             
           } else {
             // Confirm PaymentIntent for full payment
@@ -9657,7 +9676,7 @@ footer .container {
             }
 
             // Redirect to success page
-            window.location.href = `${window.location.origin}/success?payment_intent=${window.paymentFlow.paymentIntentId}`;
+            window.location.href = `${window.location.origin}/success?payment_intent=${window.paymentFlow.paymentIntentId}&email=${encodeURIComponent(billingDetails.email || '')}`;
           }
         } catch (error) {
           console.error("Unexpected error:", error);
@@ -9698,34 +9717,7 @@ footer .container {
         });
       }
 
-      // Override the original form submission to use Stripe
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("#wsform");
-        if (form) {
-          form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-            await handleStripePayment();
-          });
-        }
-        
-        // Also add click event listeners to both Reserve buttons
-        const mainReserveBtn = document.querySelector("#buReserve2");
-        const summaryReserveBtn = document.querySelector("#buReserveSummary");
-        
-        if (mainReserveBtn) {
-          mainReserveBtn.addEventListener("click", async function (e) {
-            e.preventDefault();
-            await handleStripePayment();
-          });
-        }
-        
-        if (summaryReserveBtn) {
-          summaryReserveBtn.addEventListener("click", async function (e) {
-            e.preventDefault();
-            await handleStripePayment();
-          });
-        }
-      });
+      // Form submission handlers consolidated into main DOMContentLoaded listener above
     </script>
 
     <link href="/assets/intlTelInput.css" rel="stylesheet" />

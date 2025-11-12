@@ -29709,7 +29709,29 @@
               </div>
 
               <script>
+                // Populate email field from URL parameter or sessionData
                 document.addEventListener("DOMContentLoaded", function () {
+                  const emailInput = document.getElementById("txResendEmail");
+                  if (emailInput) {
+                    // Try to get email from URL parameter first (from Payment Element redirects)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    let email = urlParams.get('email');
+
+                    // Fallback to window.sessionData if available (server-injected)
+                    if (!email && window.sessionData && window.sessionData.customerEmail) {
+                      email = window.sessionData.customerEmail;
+                    }
+
+                    // Populate the email field if we found an email
+                    if (email) {
+                      emailInput.value = email;
+                    }
+                  }
+                });
+
+                document.addEventListener("DOMContentLoaded", function () {
+                  // Consolidated UI setup (loader, favicons, animations)
+
                   // Check if the body has the class "page-ASP-index_aspx"
                   if (document.body.classList.contains("page-ASP-index_aspx")) {
                     const loader = document.createElement("div");
@@ -29725,9 +29747,7 @@
                       }, 1000);
                     }, 2500);
                   }
-                });
 
-                document.addEventListener("DOMContentLoaded", function () {
                   // Add Favicons
                   const favicons = [
                     '<link rel="apple-touch-icon" sizes="180x180" href="https://cdn.shrglobal.com/IBE/CrsMedia/P18221/apple-touch-icon.png">',

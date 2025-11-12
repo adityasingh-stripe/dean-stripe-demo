@@ -477,50 +477,6 @@ app.post("/create-payment-link", async (req, res) => {
   }
 });
 
-// Webhook handler for Payment Links
-app.post("/stripe-webhook", (req, res) => {
-  const event = req.body;
-
-  switch (event.type) {
-    case "checkout.session.completed":
-      const session = event.data.object;
-
-      if (session.metadata?.integration_type === "payment_link") {
-        console.log(
-          `Payment Link booking confirmed: ${session.metadata.booking_id}`
-        );
-
-        // Here you would typically:
-        // 1. Update your booking system
-        // 2. Send confirmation emails
-        // 3. Validate payment (3DS/CVC/AVS)
-        // 4. Create customer record if needed
-
-        console.log("Booking details:", {
-          bookingId: session.metadata.booking_id,
-          guestName: session.metadata.guest_name,
-          guestEmail: session.metadata.guest_email,
-          checkIn: session.metadata.check_in_date,
-          checkOut: session.metadata.check_out_date,
-          totalAmount: session.amount_total / 100,
-          currency: session.currency,
-        });
-      }
-      break;
-
-    case "payment_intent.succeeded":
-      const paymentIntent = event.data.object;
-      console.log(`Payment succeeded: ${paymentIntent.id}`);
-      // Apply validation logic here (3DS/CVC/AVS) as per integration guide
-      break;
-
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  res.json({ received: true });
-});
-
 // Export the Express app for Vercel
 module.exports = app;
 
