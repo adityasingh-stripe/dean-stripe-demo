@@ -9167,6 +9167,8 @@ footer .container {
           // Get the payment amount from the cart data (€760 as shown in the booking)
           const amount = 760; // Amount from WsVars.Amount
 
+          const firstDayOfStay = new Date(WsVars.DayIn);
+
           console.log(`Initializing ${flow} payment flow`);
 
           let response;
@@ -9262,8 +9264,10 @@ footer .container {
             },
           });
 
-          // Create and mount the Express Checkout Element with forced Apple Pay and Google Pay
+          // Create and mount the Express Checkout Element with Apple Pay and Google Pay
           const expressCheckoutElement = elements.create("expressCheckout", {
+            emailRequired: true,
+            phoneNumberRequired: true,
             paymentMethods: {
               applePay: "always",
               googlePay: "always",
@@ -9288,10 +9292,48 @@ footer .container {
           expressCheckoutElement.on('confirm', async (event) => {
             console.log('Express checkout confirmed with billing details:', event.billingDetails);
             
-            // Extract customer information from express checkout
             const billingDetails = event.billingDetails;
             
-            // Update payment intent with customer information
+            if (!billingDetails.email) {
+              console.error('Express checkout missing required email');
+              showPaymentError('Email address is required for express checkout. Please try again or use the regular payment form below.');
+              
+              const expressContainer = document.getElementById('express-checkout-element');
+              if (expressContainer) {
+                expressContainer.style.opacity = '1';
+                expressContainer.style.pointerEvents = 'auto';
+              }
+              
+              return;
+            }
+            
+            console.log('Express checkout email provided:', billingDetails.email);
+            
+            if (window.paymentFlow && window.paymentFlow.customerId) {
+              try {
+                console.log('Updating customer with email from express checkout...');
+                const updateResponse = await fetch('/update-customer', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    customer_id: window.paymentFlow.customerId,
+                    billing_details: billingDetails
+                  }),
+                });
+
+                if (updateResponse.ok) {
+                  const updateResult = await updateResponse.json();
+                  console.log('Customer updated successfully with express checkout details:', updateResult);
+                } else {
+                  console.warn('Failed to update customer with express checkout details:', await updateResponse.text());
+                }
+              } catch (error) {
+                console.error('Error updating customer with express checkout details:', error);
+              }
+            }
+            
             try {
               const paymentIntentId = clientSecret.split('_secret_')[0];
               await fetch('/update-payment-intent', {
@@ -9308,16 +9350,13 @@ footer .container {
               console.error('Failed to update payment intent with customer info:', error);
             }
             
-            // Populate the guest information form
             populateGuestForm(billingDetails);
             
-            // Scroll to the guest information section
             const guestSection = document.querySelector('#dvWsFirstName').closest('.ws-step');
             if (guestSection) {
               guestSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             
-            // Complete the express checkout payment
             const { error } = await stripe.confirmPayment({
               elements,
               confirmParams: {
@@ -9327,7 +9366,8 @@ footer .container {
             
             if (error) {
               console.error('Express payment failed:', error);
-              // Reset express checkout UI
+              showPaymentError(error.message || 'Payment failed. Please try again.');
+              
               const expressContainer = document.getElementById('express-checkout-element');
               if (expressContainer) {
                 expressContainer.style.opacity = '1';
