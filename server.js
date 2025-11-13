@@ -40,23 +40,12 @@ app.post("/create-payment-intent", async (req, res) => {
       customer_info,
     });
 
-    // Create empty customer first to get customer ID
-    let customerId;
-    try {
-      const customer = await stripe.customers.create({
-        // Create with minimal info, will update later with form data
-      });
-      customerId = customer.id;
-      console.log("Empty customer created for PaymentIntent:", customerId);
-    } catch (error) {
-      console.error("Error creating customer:", error);
-    }
-
     // Payment intent configuration with dynamic payment methods
+    // Customer will be created AFTER successful payment with complete billing details
     const paymentIntentData = {
       amount: amount * 100, // Convert to cents
       currency: currency,
-      customer: customerId, // Associate with customer for payment method saving
+      // No customer parameter - will create customer after payment with billing details
       setup_future_usage: "off_session", // Enable future off-session payments
       automatic_payment_methods: {
         enabled: true, // Enables dynamic payment methods (Apple Pay, Google Pay, etc.)
@@ -101,7 +90,6 @@ app.post("/create-payment-intent", async (req, res) => {
     res.send({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      customerId: customerId,
     });
   } catch (error) {
     console.error("Error creating PaymentIntent:", error);
@@ -120,20 +108,9 @@ app.post("/create-setup-intent", async (req, res) => {
       customer_info,
     });
 
-    // Create empty customer first to get customer ID
-    let customerId;
-    try {
-      const customer = await stripe.customers.create({
-        // Create with minimal info, will update later with form data
-      });
-      customerId = customer.id;
-      console.log("Empty customer created for SetupIntent:", customerId);
-    } catch (error) {
-      console.error("Error creating customer:", error);
-    }
-
+    // Customer will be created AFTER successful setup with complete billing details
     const setupIntentData = {
-      customer: customerId,
+      // No customer parameter - will create customer after setup with billing details
       automatic_payment_methods: {
         enabled: true, // Enables dynamic payment methods for SetupIntent too
       },
@@ -154,7 +131,6 @@ app.post("/create-setup-intent", async (req, res) => {
     res.send({
       clientSecret: setupIntent.client_secret,
       setupIntentId: setupIntent.id,
-      customerId: customerId,
     });
   } catch (error) {
     console.error("Error creating SetupIntent:", error);
@@ -215,6 +191,95 @@ app.post("/update-customer", async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating customer:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create customer AFTER successful payment with complete billing details from PaymentMethod
+app.post("/create-customer-from-payment", async (req, res) => {
+  try {
+    const { payment_intent_id, setup_intent_id } = req.body;
+
+    console.log("Creating customer from payment:", {
+      payment_intent_id,
+      setup_intent_id,
+    });
+
+    // Retrieve the PaymentIntent or SetupIntent to get the PaymentMethod
+    let paymentMethodId;
+    let intentType;
+
+    if (payment_intent_id) {
+      const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
+      paymentMethodId = paymentIntent.payment_method;
+      intentType = "payment";
+      console.log("Retrieved PaymentIntent:", payment_intent_id, "PaymentMethod:", paymentMethodId);
+    } else if (setup_intent_id) {
+      const setupIntent = await stripe.setupIntents.retrieve(setup_intent_id);
+      paymentMethodId = setupIntent.payment_method;
+      intentType = "setup";
+      console.log("Retrieved SetupIntent:", setup_intent_id, "PaymentMethod:", paymentMethodId);
+    } else {
+      return res.status(400).json({ error: "Either payment_intent_id or setup_intent_id is required" });
+    }
+
+    if (!paymentMethodId) {
+      return res.status(400).json({ error: "No payment method found on intent" });
+    }
+
+    // Retrieve the PaymentMethod to get billing details
+    const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+
+    console.log("PaymentMethod billing details:", paymentMethod.billing_details);
+
+    // Create customer with complete billing details from PaymentMethod
+    const customerData = {
+      payment_method: paymentMethodId,
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    };
+
+    if (paymentMethod.billing_details.name) {
+      customerData.name = paymentMethod.billing_details.name;
+    }
+
+    if (paymentMethod.billing_details.email) {
+      customerData.email = paymentMethod.billing_details.email;
+    }
+
+    if (paymentMethod.billing_details.phone) {
+      customerData.phone = paymentMethod.billing_details.phone;
+    }
+
+    if (paymentMethod.billing_details.address) {
+      customerData.address = paymentMethod.billing_details.address;
+    }
+
+    const customer = await stripe.customers.create(customerData);
+
+    console.log("Customer created successfully with complete billing details:", customer.id);
+
+    // Update the PaymentIntent or SetupIntent with the customer ID
+    if (payment_intent_id) {
+      await stripe.paymentIntents.update(payment_intent_id, {
+        customer: customer.id,
+      });
+      console.log("PaymentIntent updated with customer ID");
+    } else if (setup_intent_id) {
+      await stripe.setupIntents.update(setup_intent_id, {
+        customer: customer.id,
+      });
+      console.log("SetupIntent updated with customer ID");
+    }
+
+    res.json({
+      success: true,
+      customer_id: customer.id,
+      intent_type: intentType,
+    });
+  } catch (error) {
+    console.error("Error creating customer from payment:", error);
     res.status(500).json({ error: error.message });
   }
 });

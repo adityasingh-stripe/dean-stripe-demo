@@ -9198,15 +9198,15 @@ footer .container {
             const responseData = await response.json();
             console.log('SetupIntent response data:', responseData);
             
-            const { clientSecret: cs, setupIntentId, customerId } = responseData;
-            
+            const { clientSecret: cs, setupIntentId } = responseData;
+
             if (!cs) {
               throw new Error("No clientSecret received from SetupIntent");
             }
-            
+
             clientSecret = cs;
             console.log('clientSecret set for deferred flow:', !!clientSecret);
-            window.paymentFlow = { type: 'deferred', setupIntentId, customerId };
+            window.paymentFlow = { type: 'deferred', setupIntentId };
             
           } else {
             console.log('Creating PaymentIntent for full payment...');
@@ -9298,42 +9298,21 @@ footer .container {
             if (!billingDetails.email) {
               console.error('Express checkout missing required email');
               showPaymentError('Email address is required for express checkout. Please try again or use the regular payment form below.');
-              
+
               const expressContainer = document.getElementById('express-checkout-element');
               if (expressContainer) {
                 expressContainer.style.opacity = '1';
                 expressContainer.style.pointerEvents = 'auto';
               }
-              
+
+              // Properly reject the payment flow instead of just returning
+              event.reject({ reason: 'invalid_payer_email' });
               return;
             }
             
             console.log('Express checkout email provided:', billingDetails.email);
-            
-            if (window.paymentFlow && window.paymentFlow.customerId) {
-              try {
-                console.log('Updating customer with email from express checkout...');
-                const updateResponse = await fetch('/update-customer', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    customer_id: window.paymentFlow.customerId,
-                    billing_details: billingDetails
-                  }),
-                });
 
-                if (updateResponse.ok) {
-                  const updateResult = await updateResponse.json();
-                  console.log('Customer updated successfully with express checkout details:', updateResult);
-                } else {
-                  console.warn('Failed to update customer with express checkout details:', await updateResponse.text());
-                }
-              } catch (error) {
-                console.error('Error updating customer with express checkout details:', error);
-              }
-            }
+            // Customer will be created after payment confirmation with billing details from PaymentMethod
 
             populateGuestForm(billingDetails);
             
@@ -9358,6 +9337,18 @@ footer .container {
                 expressContainer.style.opacity = '1';
                 expressContainer.style.pointerEvents = 'auto';
               }
+            }
+          });
+
+          // Handle express checkout cancellation (when user closes dialog without completing)
+          expressCheckoutElement.on('cancel', () => {
+            console.log('Express checkout canceled by user');
+
+            // Re-enable the express checkout buttons so user can retry
+            const expressContainer = document.getElementById('express-checkout-element');
+            if (expressContainer) {
+              expressContainer.style.opacity = '1';
+              expressContainer.style.pointerEvents = 'auto';
             }
           });
 
@@ -9592,32 +9583,30 @@ footer .container {
               return false;
             }
 
-            // Payment successful! Now update customer with complete details
+            // Payment successful! Now create customer with complete billing details
             console.log("SetupIntent confirmed successfully:", setupIntent.id);
-            
-            if (window.paymentFlow.customerId) {
-              try {
-                console.log('Updating customer with billing details after successful setup...');
-                const updateResponse = await fetch('/update-customer', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    customer_id: window.paymentFlow.customerId,
-                    billing_details: billingDetails
-                  }),
-                });
 
-                if (updateResponse.ok) {
-                  const updateResult = await updateResponse.json();
-                  console.log('Customer updated successfully after setup:', updateResult);
-                } else {
-                  console.warn('Failed to update customer after setup:', await updateResponse.text());
-                }
-              } catch (error) {
-                console.error('Error updating customer after setup:', error);
+            // Create customer with billing details from PaymentMethod
+            try {
+              console.log('Creating customer from SetupIntent...');
+              const customerResponse = await fetch('/create-customer-from-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  setup_intent_id: window.paymentFlow.setupIntentId
+                }),
+              });
+
+              if (customerResponse.ok) {
+                const customerResult = await customerResponse.json();
+                console.log('Customer created successfully:', customerResult.customer_id);
+              } else {
+                console.warn('Failed to create customer:', await customerResponse.text());
               }
+            } catch (error) {
+              console.error('Error creating customer:', error);
             }
 
             // Redirect to success page
@@ -9642,32 +9631,30 @@ footer .container {
               return false;
             }
 
-            // Payment successful! Now update customer with complete details
+            // Payment successful! Now create customer with complete billing details
             console.log("PaymentIntent confirmed successfully:", paymentIntent.id);
-            
-            if (window.paymentFlow.customerId) {
-              try {
-                console.log('Updating customer with billing details after successful payment...');
-                const updateResponse = await fetch('/update-customer', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    customer_id: window.paymentFlow.customerId,
-                    billing_details: billingDetails
-                  }),
-                });
 
-                if (updateResponse.ok) {
-                  const updateResult = await updateResponse.json();
-                  console.log('Customer updated successfully after payment:', updateResult);
-                } else {
-                  console.warn('Failed to update customer after payment:', await updateResponse.text());
-                }
-              } catch (error) {
-                console.error('Error updating customer after payment:', error);
+            // Create customer with billing details from PaymentMethod
+            try {
+              console.log('Creating customer from PaymentIntent...');
+              const customerResponse = await fetch('/create-customer-from-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  payment_intent_id: window.paymentFlow.paymentIntentId
+                }),
+              });
+
+              if (customerResponse.ok) {
+                const customerResult = await customerResponse.json();
+                console.log('Customer created successfully:', customerResult.customer_id);
+              } else {
+                console.warn('Failed to create customer:', await customerResponse.text());
               }
+            } catch (error) {
+              console.error('Error creating customer:', error);
             }
 
             // Redirect to success page
