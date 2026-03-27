@@ -9362,13 +9362,19 @@ footer .container {
             console.log('User agent:', navigator.userAgent);
           }, 1000);
 
-          // Create and mount the Payment Element
-          paymentElement = elements.create("payment");
+          // Filter card brands (Payment Element) — see https://docs.stripe.com/payments/customize-payment-methods#filter-card-brands
+          paymentElement = elements.create("payment", {
+            cardBrandAcceptance: {
+              filter: "disallowed",
+              brands: ["amex"],
+            },
+          });
 
           // ALTERNATIVE: Payment Element with paymentMethodOrder (for comparison testing)
           // Uncomment below to test Payment Element with custom ordering instead of current config
           // paymentElement = elements.create("payment", {
           //   paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'klarna'],
+          //   cardBrandAcceptance: { filter: "disallowed", brands: ["amex"] },
           //   fields: {
           //     billingDetails: {
           //       address: {
