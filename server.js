@@ -11,6 +11,16 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Block Amex (and tune other brands) for card payments; Payment Element reads this from the Intent via clientSecret.
+// See https://docs.stripe.com/payments/checkout/customization/card-brands
+const CARD_BRAND_RESTRICTIONS = {
+  card: {
+    restrictions: {
+      brands_blocked: ["american_express"],
+    },
+  },
+};
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -50,6 +60,7 @@ app.post("/create-payment-intent", async (req, res) => {
       automatic_payment_methods: {
         enabled: true, // Enables dynamic payment methods (Apple Pay, Google Pay, etc.)
       },
+      payment_method_options: CARD_BRAND_RESTRICTIONS,
       // No confirmation_method specified = defaults to "automatic"
       // We'll still collect billing details from form and pass them in confirmPayment()
     };
@@ -114,6 +125,7 @@ app.post("/create-setup-intent", async (req, res) => {
       automatic_payment_methods: {
         enabled: true, // Enables dynamic payment methods for SetupIntent too
       },
+      payment_method_options: CARD_BRAND_RESTRICTIONS,
       usage: "off_session",
       metadata: {
         integration_type: "payment_element",
@@ -493,6 +505,7 @@ app.post("/create-payment-link", async (req, res) => {
       customer_creation: "always", // Create customer for future bookings
       payment_intent_data: {
         setup_future_usage: "off_session", // Save payment method
+        payment_method_options: CARD_BRAND_RESTRICTIONS,
       },
       restrictions: {
         completed_sessions: { limit: 1 }, // Single-use only

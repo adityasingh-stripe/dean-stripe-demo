@@ -4,3 +4,4 @@ node_modules
 package-lock.json
 
 INTEGRATION-GUIDE.md
+EXPRESS_CHECKOUT_EMAIL_VALIDATION_GUIDE.md
